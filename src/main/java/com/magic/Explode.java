@@ -82,6 +82,7 @@ public class Explode {
                             System.out.println(pwd + " error");
                         } else {
                             System.out.println(result);
+                            break;
                         }
 
                     }
