@@ -70,6 +70,9 @@ public class Explode {
                         paramMap.clear();
                         paramMap.add("pwd", pwd);
                         System.out.println(pwd);
+                        if (ifSkip(type, pwd)) {
+                            continue;
+                        }
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
@@ -101,6 +104,7 @@ public class Explode {
         }
 
     }
+
 
     /**
      * 递归调用，访问太频繁被404之后。等待10分钟后继续
@@ -151,6 +155,30 @@ public class Explode {
         }
         return dic;
     }
+
+
+    private static List<String> num_ch_low = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+
+    //全数字爆破后，进行字母爆破的时候，跳过全数字，
+    public static boolean ifSkip(String type, String pwd) {
+        if (type.equals("num")) {
+            return false;
+        }
+        List<String> pwdList = new ArrayList<>();
+        pwdList.add(String.valueOf(pwd.charAt(0)));
+        pwdList.add(String.valueOf(pwd.charAt(1)));
+        pwdList.add(String.valueOf(pwd.charAt(2)));
+        pwdList.add(String.valueOf(pwd.charAt(3)));
+        if (type.equals("low")) {
+            // 跳过纯数字
+            return num.containsAll(pwdList);
+        } else if (type.equals("high")) {
+            // 跳过 数字+小写
+            return num_ch_low.containsAll(pwdList);
+        }
+        return false;
+    }
+
 
     // 继续爆破的字符 对应 便利数字
     public static Map<String, Integer> initDicMap() {
