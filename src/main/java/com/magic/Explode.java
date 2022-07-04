@@ -21,7 +21,6 @@ public class Explode {
     // 分别对应 36 - 61
     private static List<String> ch_high = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
 
-
     //参考官方文档 https://pan.baidu.com/union/doc/Yksmyl2v0
     public static void main(String[] args) {
 
@@ -157,24 +156,18 @@ public class Explode {
     }
 
 
-    private static List<String> num_ch_low = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
-
+    private static List<Character> num_ch_low = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
     //全数字爆破后，进行字母爆破的时候，跳过全数字，
     public static boolean ifSkip(String type, String pwd) {
         if (type.equals("num")) {
             return false;
         }
-        List<String> pwdList = new ArrayList<>();
-        pwdList.add(String.valueOf(pwd.charAt(0)));
-        pwdList.add(String.valueOf(pwd.charAt(1)));
-        pwdList.add(String.valueOf(pwd.charAt(2)));
-        pwdList.add(String.valueOf(pwd.charAt(3)));
         if (type.equals("low")) {
             // 跳过纯数字
-            return num.containsAll(pwdList);
+            return num.containsAll(Arrays.asList(pwd.toCharArray()));
         } else if (type.equals("high")) {
             // 跳过 数字+小写
-            return num_ch_low.containsAll(pwdList);
+            return num_ch_low.containsAll(Arrays.asList(pwd.toCharArray()));
         }
         return false;
     }
